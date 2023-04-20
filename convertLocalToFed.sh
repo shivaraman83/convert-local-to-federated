@@ -33,4 +33,4 @@ while IFS= read -r repo; do
     echo -e ""
 done < $reposfile
 
-### sample cmd to run - ./convertLocalToFed.sh https://ramkannan.jfrog.io admin ****
+### sample cmd to run - ./convertLocalToFed.sh https://instanceurl.jfrog.io admin ****

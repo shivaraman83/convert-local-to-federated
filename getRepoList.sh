@@ -27,4 +27,4 @@ else
 fi
 #cat repos_list_${TYPE}.txt
 
-### sample cmd to run - ./getRepoList.sh https://ramkannan.jfrog.io local admin ****
+### sample cmd to run - ./getRepoList.sh https://instanceurl.jfrog.io local admin ****

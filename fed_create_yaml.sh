@@ -22,4 +22,4 @@ while IFS= read -r reponame; do
     echo -e "        enabled: true" >> $FILE_NAME
 done < repos_list_federated.txt 
 
-### sample cmd to run - ./fed_create_yaml.sh https://ramkannans-sbx.dev.gcp.devopsacc.team https://ramkannans-apac-sbx.dev.gcp.devopsacc.team admin ****
+### sample cmd to run - ./fed_create_yaml.sh https://instanceurl.jfrog.io https://dr-instanceurl.jfrog.io admin ****

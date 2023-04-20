@@ -4,11 +4,11 @@ Below steps needs to be followed to convert all your local repositories to feder
 
 ## Pre-requisites
 1. instanceurl - your active instance url
-2. dr-instance-url - cold/warm instance url 
+2. dr-instanceurl - cold/warm instance url 
 3. Federated repository binding between your instance and dr-instance
 4. Shell script requires jq to be installed 
 
 ## Steps 
 1. ./convertLocalToFed.sh https://instanceurl.jfrog.io admin-user-id admin-id-token
-2. ./fed_create_yaml.sh https://instance-url.jfrog.io https://dr-instance-url.jfrog.io admin-user-id admin-id-Token
+2. ./fed_create_yaml.sh https://instanceurl.jfrog.io https://dr-instanceurl.jfrog.io admin-user-id admin-id-Token
 3. ./fed_repo_member_sync.sh https://instanceurl.jfrog.io admin-user-id admin-id-token
