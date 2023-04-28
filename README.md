@@ -10,6 +10,9 @@ Below steps needs to be followed to convert all your local repositories to feder
 5. admin-user-id - admin account for your instance
 6. admin-id-token - ID token of your admin user
 
+## Assumptions
+The steps below assume you are setting a new DR instance for the first time and all the repo names match your primary instance
+
 ## Steps 
 ### Run on both the instance and dr-instance
 1. ./convertLocalToFed.sh https://instanceurl.jfrog.io admin-user-id admin-id-toke
