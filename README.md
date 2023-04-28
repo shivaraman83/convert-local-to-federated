@@ -1,6 +1,6 @@
 # Convert Local repos to federated repos
 
-Below steps needs to be followed to convert all your local repositories to federated repositories. Use case for this - if you are setting up a Cold/Warm DR
+Below steps needs to be followed to convert all your local repositories to federated repositories. Use case for this - if you are setting up a Cold/Warm DR of Jfrog artifactory for the first time
 
 ## Pre-requisites
 1. instanceurl - your active instance url
