@@ -1,7 +1,7 @@
 #! /bin/bash
 
-SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://ramkannans-sbx.dev.gcp.devopsacc.team}"
-TARGET_JPD_URL="${2:?please enter JPD URL. ex - https://ramkannans-apac-sbx.dev.gcp.devopsacc.team}"
+SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://instanceurl.jfrog.io}"
+TARGET_JPD_URL="${2:?please enter JPD URL. ex - https://dr-instanceurl.jfrog.io}"
 USER_NAME="${3:?please provide the username in JPD . ex - admin}"  ### common credentials across 3 JPD's
 USER_TOKEN="${4:?please provide the user pwd or token or API Key . ex - password}"  ### common credentials across 3 JPD's
 

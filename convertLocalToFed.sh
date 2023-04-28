@@ -16,12 +16,14 @@ set -e
 set -u
 
 ### Get Arguments
-SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://ramkannan.jfrog.io}"
+SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://instanceurl.jfrog.io}"
 USER_NAME="${2:?please provide the username in JPD . ex - admin}"
 JPD_AUTH_TOKEN="${3:?please provide the identity token}"
 
 ### define variables
+
 reposfile="repos_list_local.txt"
+rm -rf repos_list_local.txt
 
 ### Run the curl API
 rm -rf *.json

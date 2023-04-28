@@ -11,6 +11,10 @@ Below steps needs to be followed to convert all your local repositories to feder
 6. admin-id-token - ID token of your admin user
 
 ## Steps 
-1. ./convertLocalToFed.sh https://instanceurl.jfrog.io admin-user-id admin-id-token
+### Run on both the instance and dr-instance
+1. ./convertLocalToFed.sh https://instanceurl.jfrog.io admin-user-id admin-id-toke
+### Run only on the main instance 
 2. ./fed_create_yaml.sh https://instanceurl.jfrog.io https://dr-instanceurl.jfrog.io admin-user-id admin-id-Token
-3. ./fed_repo_member_sync.sh https://instanceurl.jfrog.io admin-user-id admin-id-token
+3. Register the other JPD’s - https://jfrog.com/help/r/jfrog-platform-administration-documentation/managing-platform-deployments
+4. Create a federated repository binding between the JPD's through the UI -https://jfrog.com/help/r/jfrog-platform-administration-documentation/binding-tokens#BindingTokens-SettingupBindingTokens
+5. Now sync the members ./fed_repo_member_sync.sh https://instanceurl.jfrog.io admin-user-id admin-id-token

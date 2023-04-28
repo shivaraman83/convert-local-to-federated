@@ -19,3 +19,5 @@ while read -r repo_id; do
   #jf rt curl -XPOST /api/federation/configSync/$repo_id
   curl -X POST -H 'Content-Type: application/yaml' -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/federation/configSync/$repo_id"
 done
+
+### sample cmd to run - ./fed_create_yaml.sh https://instanceurl.jfrog.io admin ****
