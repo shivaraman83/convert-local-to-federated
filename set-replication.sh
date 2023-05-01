@@ -11,16 +11,7 @@
 # are using the software and the JFrog product or service.
 
 ### Exit the script on any failures
-set -eo pipefail
-set -e
-set -u
-
-### Get Arguments
-SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://instanceurl.jfrog.io}"
-USER_NAME="${2:?please provide the username in JPD . ex - admin}"
-JPD_AUTH_TOKEN="${3:?please provide the identity token}"
-
-### define variables
+## define variables
 
 cd replication
 
@@ -28,8 +19,11 @@ reposfile="repositories.list"
 rm -rf repositories.list
 rm -rf *.json
 
+jf config use source-server
+
 ### Run the curl API
-curl -s -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" | grep "key" > repositories.list
+jf rt curl api/repositories?type=local | grep "key" > repositories.list
+##curl -s -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" | grep "key" > repositories.list
 
 cat repositories.list |  while read line
 do
