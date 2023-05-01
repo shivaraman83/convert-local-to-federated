@@ -17,37 +17,40 @@ set -u
 
 ### Get Arguments
 SOURCE_JPD_URL="${1:?please enter JPD URL. ex - https://instanceurl.jfrog.io}"
-TARGET_JPD_URL="${2:?please enter JPD URL. ex - https://dr-instanceurl.jfrog.io}"
-USER_NAME="${3:?please provide the username in JPD . ex - admin}"
-JPD_AUTH_TOKEN="${4:?please provide the identity token}"
+USER_NAME="${2:?please provide the username in JPD . ex - admin}"
+JPD_AUTH_TOKEN="${3:?please provide the identity token}"
 
 ### define variables
 
-reposfile="repos_list_local.txt"
-rm -rf repos_list_local.txt
+cd replication
+
+reposfile="repositories.list"
+rm -rf repositories.list
+rm -rf *.json
 
 ### Run the curl API
-rm -rf *.json
-curl -X GET -H 'Content-Type: application/json' -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" -s | jq -rc '.[] | .key' > $reposfile
-
 curl -s -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" | grep "key" > repositories.list
 
-##echo "{'url':'${TARGET_JPD_URL}/artifactory/test', 'username':'admin', 'password':'Test@123', 'enabled':'true', 'cronExp': '*/5 * * * *' }"
+cat repositories.list |  while read line
+do
+   #Variable setup
+   #Get the repository key, remove "key": from the JSON
+   REPO=$(echo $line | cut -d ':' -f 2)
+   REPO_FILENAME=$(echo ${REPO%??} | cut -c 2-) #Get a good looking filename
+   #Insert the static default parameters
+   echo '{ "enabled": "true","cronExp":"0 0 12 * * ?",' > $REPO_FILENAME-template.json
+   #Insert the repository Key
+   echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
+  #Insert the remaining parameters, note we're replicating to the same repository name
+   echo '"serverId": "target-server", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
+done
 
-while IFS= read -r repo; do
-    echo -e "\nConfiguring replication for $repo"
+jf config use source-server
+ls *.json  | while read line
+do
+     echo "jf rt replication-create $line"
+     jf rt replication-create $line
+done
 
-
-echo "curl -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" -H 'content-type:application/json' -X POST  -d "{\"url\":\"${TARGET_JPD_URL}\/artifactory\$repo\", \"username\":\"admin\", \"password\":\"Test@123\",\"enabled\":\"true\", \"cronExp\":\"0 45 10 ? 0 0\",  \"syncProperties\":\"true\",  \"enableEventReplication\":\"true\", \"checkBinaryExistenceInFilestore\":\"true\"}" ${SOURCE_JPD_URL}/artifactory/api/replications/$repo"
-
-curl -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" -H 'content-type:application/json' -X POST  -d "{\"url\":\"${TARGET_JPD_URL}\/artifactory\/$repo\", \"username\":\"admin\", \"password\":\"Test@123\",\"enabled\":\"true\", \"cronExp\":\"0 45 10 ? 0 0\",  \"syncProperties\":\"true\",  \"enableEventReplication\":\"true\", \"checkBinaryExistenceInFilestore\":\"true\"}" ${SOURCE_JPD_URL}/artifactory/api/replications/$repo
-
-#curl -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" -H 'content-type:application/json' -X POST  -d "[{\"url\":\"${TARGET_JPD_URL}\/artifactory\/$repo\",\"disableProxy\":\"false\", \"socketTimeoutMillis\":\"15000\", \"username\":\"admin\", \"password\":\"Test@123\", \"syncStatistics\":\"true\", \"enabled\":\"true\", \"cronExp\":\"0 45 10 ? \0 \0\", \"syncDeletes\":\"false\", \"syncProperties\":\"true\",  \"repoKey\":\"$repo\", \"enableEventReplication\":\"true\", \"checkBinaryExistenceInFilestore\":\"true\"}]" ${SOURCE_JPD_URL}/artifactory/api/replications/$repo
-
-
-#    curl -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" -H "Accept: application/json" -H "Content-Type:application/json" -H -X POST  \
- #   --data "[{\"url\":\"${TARGET_JPD_URL}/artifactory/$repo\",\"disableProxy\":\"false\", \"socketTimeoutMillis\":\"15000\", \"username\":\"admin\", \"password\":\"Test@123\", \"syncStatistics\":\"true\", \"enabled\":\"true\", \"cronExp\":\"0 45 10 ? * *\", \"syncDeletes\":\"false\", \"syncProperties\":\"true\",  \"repoKey\":\"$repo\", \"enableEventReplication\":\"true\", \"checkBinaryExistenceInFilestore\":\"true\"}}]" ${SOURCE_JPD_URL}/artifactory/api/replications/$repo
-  #  echo -e ""
-done < $reposfile
 
 ### sample cmd to run - ./convertLocalToFed.sh https://instanceurl.jfrog.io admin ****
