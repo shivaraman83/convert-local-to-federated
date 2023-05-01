@@ -15,11 +15,12 @@
 source="${1:?source-serverId ex - source-server}"
 target="${2:?target-serverId . ex - target-server}"
 TYPE="${3:?please enter type of repo. ex - local, remote, virtual, federated, all}"
+
 cd repository
 
 reposfile="repositories.list"
 rm -rf repositories.list
-rm -rf *.json
+rm -rf *config.json
 
 
 jf config use ${source}
@@ -32,13 +33,8 @@ cat repositories.list |  while read line
 do
     REPO=$(echo $line | cut -d ':' -f 2)
     jf rt curl api/repositories/$REPO >> $REPO-config.json
+    #echo $target
+    jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target
 done
 
-ls *.json  | while read line
-do
-     echo "jf rt repo-create $line"
-     jf rt repo-create $line
-done
-
-
-### sample cmd to run - ./set-replication.sh source-server target-server
+### sample cmd to run - ./set-replication.sh source-server target-server local
