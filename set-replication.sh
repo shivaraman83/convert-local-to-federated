@@ -41,7 +41,6 @@ do
    echo '"serverId": "'$target'", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
 done
 
-jf config use source-server
 ls *.json  | while read line
 do
      echo "jf rt replication-create $line"
