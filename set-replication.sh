@@ -12,14 +12,16 @@
 
 ### Exit the script on any failures
 ## define variables
-
+source="${1:?source-serverId ex - source-server}"
+target="${2:?target-serverId . ex - target-server}"
 cd replication
 
 reposfile="repositories.list"
 rm -rf repositories.list
 rm -rf *.json
 
-jf config use source-server
+
+jf config use ${source}
 
 ### Run the curl API
 jf rt curl api/repositories?type=local | grep "key" > repositories.list
@@ -36,7 +38,7 @@ do
    #Insert the repository Key
    echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
   #Insert the remaining parameters, note we're replicating to the same repository name
-   echo '"serverId": "target-server", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
+   echo '"serverId": "'$target'", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
 done
 
 jf config use source-server
@@ -47,4 +49,4 @@ do
 done
 
 
-### sample cmd to run - ./convertLocalToFed.sh https://instanceurl.jfrog.io admin ****
+### sample cmd to run - ./set-replication.sh source-server target-server
