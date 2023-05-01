@@ -37,4 +37,4 @@ do
     jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target
 done
 
-### sample cmd to run - ./set-replication.sh source-server target-server local
+### sample cmd to run - ./create-repos.sh source-server target-server local
