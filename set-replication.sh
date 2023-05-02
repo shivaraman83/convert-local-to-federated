@@ -33,7 +33,7 @@ do
     ##jf rt curl api/replications/$REPO_FILENAME -s | grep message | xargs
     data=$(jf rt curl api/replications/$REPO_FILENAME -s | grep message | xargs)
     if [[ $data == *"message"*  ]];then
-     echo $data
+     echo "creating json payload for replicating" $REPO_FILENAME
      #Variable setup
      #Get the repository key, remove "key": from the JSON
      #Insert the static default parameters
@@ -45,13 +45,14 @@ do
      ## Create delete replication script proactively
      echo  "jf rt replication-delete $REPO_FILENAME --quiet" >> delete-replication.txt
    else
-       echo "replication configured"
+       echo "replication already available - Add the replication manually"
        echo "$REPO_FILENAME" >> replication-configured-repos.txt
    fi
 done
 
 ls *.json  | while read line
 do
+
      echo "jf rt replication-create $line"
      jf rt replication-create $line
 done
