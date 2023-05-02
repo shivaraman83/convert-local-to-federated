@@ -28,18 +28,26 @@ jf rt curl api/repositories?type=local | grep "key" > repositories.list
 
 cat repositories.list |  while read line
 do
-   #Variable setup
-   #Get the repository key, remove "key": from the JSON
-   REPO=$(echo $line | cut -d ':' -f 2)
-   REPO_FILENAME=$(echo ${REPO%??} | cut -c 2-) #Get a good looking filename
-   #Insert the static default parameters
-   echo '{ "enabled": "true","cronExp":"0 0 12 * * ?",' > $REPO_FILENAME-template.json
-   #Insert the repository Key
-   echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
-  #Insert the remaining parameters, note we're replicating to the same repository name
-   echo '"serverId": "'$target'", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
-   ## Create delete replication script proactively
-   echo  "jf rt replication-delete $REPO_FILENAME --quiet" >> delete-replication.txt
+    REPO=$(echo $line | cut -d ':' -f 2)
+    REPO_FILENAME=$(echo ${REPO%??} | cut -c 2-) #Get a good looking filename
+    ##jf rt curl api/replications/$REPO_FILENAME -s | grep message | xargs
+    data=$(jf rt curl api/replications/$REPO_FILENAME -s | grep message | xargs)
+    if [[ $data == *"message"*  ]];then
+     echo $data
+     #Variable setup
+     #Get the repository key, remove "key": from the JSON
+     #Insert the static default parameters
+     echo '{ "enabled": "true","cronExp":"0 0 12 * * ?",' > $REPO_FILENAME-template.json
+     #Insert the repository Key
+     echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
+     #Insert the remaining parameters, note we're replicating to the same repository name
+     echo '"serverId": "'$target'", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
+     ## Create delete replication script proactively
+     echo  "jf rt replication-delete $REPO_FILENAME --quiet" >> delete-replication.txt
+   else
+       echo "replication configured"
+       echo "$REPO_FILENAME" >> replication-configured-repos.txt
+   fi
 done
 
 ls *.json  | while read line
