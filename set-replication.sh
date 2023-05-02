@@ -20,7 +20,6 @@ reposfile="repositories.list"
 rm -rf repositories.list
 rm -rf *.json
 
-
 jf config use ${source}
 
 ### Run the curl API
@@ -39,6 +38,8 @@ do
    echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
   #Insert the remaining parameters, note we're replicating to the same repository name
    echo '"serverId": "'$target'", "targetRepoKey": '$REPO' "enableEventReplication":"true" }' >> $REPO_FILENAME-template.json
+   ## Create delete replication script proactively
+   echo  "jf rt replication-delete $REPO_FILENAME --quiet" >> delete-replication.txt
 done
 
 ls *.json  | while read line
