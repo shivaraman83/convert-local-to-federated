@@ -34,7 +34,11 @@ do
     REPO=$(echo $line | cut -d ':' -f 2)
     jf rt curl api/repositories/$REPO >> $REPO-config.json
     echo creating repo -- $REPO on $target
-    jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target
+    data=$( jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target -s | grep message | xargs)
+    echo $data
+    if [[ $data == *"message"*  ]];then
+      echo "$REPO" >> conflicting-repos.txt
+    fi
 done
 
 ### sample cmd to run - ./create-repos.sh source-server target-server local
