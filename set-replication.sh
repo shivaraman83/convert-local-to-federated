@@ -26,6 +26,12 @@ jf config use ${source}
 jf rt curl api/repositories?type=local | grep "key" > repositories.list
 ##curl -s -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" | grep "key" > repositories.list
 
+max=60
+cronmin=0
+mininterval=2
+cronhr=0
+reset=0
+
 cat repositories.list |  while read line
 do
     REPO=$(echo $line | cut -d ':' -f 2)
@@ -37,7 +43,13 @@ do
      #Variable setup
      #Get the repository key, remove "key": from the JSON
      #Insert the static default parameters
-     echo '{ "enabled": "true","cronExp":"0 0 12 * * ?",' > $REPO_FILENAME-template.json
+     if [[ $cronmin -lt $max && $cronhr -lt 12 ]] ;then
+         cronmin=$(( $mininterval + $cronmin))
+       elif [[ $cronmin -eq $max ]]; then
+         cronhr=$(( $cronhr + 1))
+         cronmin=$reset
+     fi
+     echo '{ "enabled": "true","cronExp":"0 '$cronmin' '$cronhr' * * ?",' > $REPO_FILENAME-template.json
      #Insert the repository Key
      echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
      #Insert the remaining parameters, note we're replicating to the same repository name
