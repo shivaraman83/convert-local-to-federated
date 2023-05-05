@@ -26,7 +26,9 @@ jf config use ${source}
 jf rt curl api/repositories?type=local | grep "key" > repositories.list
 ##curl -s -u "${USER_NAME}":"${JPD_AUTH_TOKEN}" "${SOURCE_JPD_URL}/artifactory/api/repositories?type=local" | grep "key" > repositories.list
 
+## Dont change the default timer. The below schedules replication for all repos 2 minutes apart
 max=60
+maxhr=24
 cronmin=0
 mininterval=2
 cronhr=0
@@ -40,15 +42,20 @@ do
     data=$(jf rt curl api/replications/$REPO_FILENAME -s | grep message | xargs)
     if [[ $data == *"message"*  ]];then
      echo "creating json payload for replicating" $REPO_FILENAME
-     #Variable setup
-     #Get the repository key, remove "key": from the JSON
-     #Insert the static default parameters
-     if [[ $cronmin -lt $max && $cronhr -lt 12 ]] ;then
-         cronmin=$(( $mininterval + $cronmin))
-       elif [[ $cronmin -eq $max ]]; then
-         cronhr=$(( $cronhr + 1))
-         cronmin=$reset
-     fi
+    if [ $cronmin -lt $max -a $cronhr -lt $maxhr ];then
+        cronmin=$(( $mininterval + $cronmin))
+        if [[ $cronmin -eq $max ]]; then
+          cronhr=$(( $cronhr + 1))
+          cronmin=$reset
+        fi
+      elif [[ $cronmin -eq $max ]]; then
+        cronhr=$(( $cronhr + 1))
+        cronmin=$reset
+      elif [[ $cronhr -eq $maxhr ]]; then
+        cronhr=$reset
+        cronmin=$reset
+    fi
+
      echo '{ "enabled": "true","cronExp":"0 '$cronmin' '$cronhr' * * ?",' > $REPO_FILENAME-template.json
      #Insert the repository Key
      echo '"repoKey": '$REPO >> $REPO_FILENAME-template.json
