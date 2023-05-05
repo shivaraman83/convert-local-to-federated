@@ -22,6 +22,7 @@ reposfile="repositories.list"
 rm -rf repositories.list
 rm -rf *config.json
 
+excluderepos=("artifactory-build-info" "_intransit")
 
 jf config use ${source}
 
@@ -32,13 +33,20 @@ jf rt curl api/repositories?type=${TYPE} -s | jq -rc '.[] | .key' > repositories
 cat repositories.list |  while read line
 do
     REPO=$(echo $line | cut -d ':' -f 2)
-    jf rt curl api/repositories/$REPO >> $REPO-config.json
-    echo creating repo -- $REPO on $target
-    data=$( jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target -s | grep message | xargs)
-    echo $data
-    if [[ $data == *"message"*  ]];then
-      echo "$REPO" >> conflicting-repos.txt
-    fi
+    echo "Getting configuration for "$REPO
+
+      if [[ ${excluderepos[*]} =~ $REPO ]]; then
+        echo "Skipping excluded Repo" $REPO
+      else
+        jf rt curl api/repositories/$REPO >> $REPO-config.json
+        echo creating repo -- $REPO on $target
+        data=$( jf rt curl  -X PUT api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=$target -s | grep message | xargs)
+        echo $data
+        if [[ $data == *"message"*  ]];then
+          echo "$REPO" >> conflicting-repos.txt
+        fi
+      fi
+
 done
 
 ### sample cmd to run - ./create-repos.sh source-server target-server local
