@@ -19,19 +19,16 @@ jf rt curl api/repositories\?type=local\&packageType=npm -s | jq -rc '.[] | .key
 
 cat repositories.list |  while read line
 do
-     REPO=$(echo $line | cut -d ':' -f 2)
-     echo "Getting configuration for "$REPO
-     if [[ ${excluderepos[*]} =~ $REPO ]]; then
-        echo "Skipping excluded Repo" $REPO
-     else
-        jf rt curl api/repositories/$REPO >> $REPO-config.json
-        tempfile=$(mktemp -u)
-        jq --arg sub "npm-default" '.repoLayoutRef|= $sub' "$REPO-config.json" > "$tempfile"
-        mv "$tempfile" "$REPO-config.json"
-        #data=$( jf rt curl  -X POST api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=ukg-saas -s | grep message | xargs)
-        #echo $data
-        #if [[ $data == *"message"*  ]];then
-        #    echo "$REPO" >> conflicting-repos.txt
-        #fi
-     fi
+    REPO=$(echo $line | cut -d ':' -f 2)
+    echo "Getting configuration for "$REPO
+    jf rt curl api/repositories/$REPO >> $REPO-config.json
+
+    tempfile=$(mktemp -u)
+    jq --arg sub "npm-default" '.repoLayoutRef|= $sub' "$REPO-config.json" > "$tempfile"
+    mv "$tempfile" "$REPO-config.json"
+    #data=$( jf rt curl  -X POST api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=ukg-saas -s | grep message | xargs)
+    #echo $data
+    #if [[ $data == *"message"*  ]];then
+    #    echo "$REPO" >> conflicting-repos.txt
+    #fi
 done
