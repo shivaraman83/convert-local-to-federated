@@ -13,7 +13,8 @@
 ### Exit the script on any failures
 ## define variable
 cd repository
-rm *.*
+rm *.json
+rm *.list
 jf c use ukg-saas
 jf rt curl api/repositories\?type=local\&packageType=npm -s | jq -rc '.[] | .key' > repositories.list
 
@@ -22,13 +23,16 @@ do
     REPO=$(echo $line | cut -d ':' -f 2)
     echo "Getting configuration for "$REPO
     jf rt curl api/repositories/$REPO >> $REPO-config.json
+    cp $REPO-config.json $REPO-config-before-change.json
 
     tempfile=$(mktemp -u)
     jq --arg sub "npm-default" '.repoLayoutRef|= $sub' "$REPO-config.json" > "$tempfile"
     mv "$tempfile" "$REPO-config.json"
-    #data=$( jf rt curl  -X POST api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=ukg-saas -s | grep message | xargs)
-    #echo $data
-    #if [[ $data == *"message"*  ]];then
-    #    echo "$REPO" >> conflicting-repos.txt
-    #fi
+    mv $REPO-config-before-change.json backup
+
+    data=$( jf rt curl  -X POST api/repositories/$REPO -H "Content-Type: application/json" -T $REPO-config.json --server-id=ukg-saas -s | grep message | xargs)
+    echo $data
+    if [[ $data == *"message"*  ]];then
+        echo "$REPO" >> conflicting-repos.txt
+    fi
 done
