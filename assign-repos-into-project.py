@@ -51,7 +51,7 @@ def rename_repos (REPO_LIST, REPO_TYPE_TO_PROCESS, TARGET_PROJECT):   # Expectin
                     print("------------->Skipping Excluded Repo: ", REPO_NAME, " Type: ", REPO_TYPE)
                 else:
                     print("--->Renaming ",REPO_NAME," Type: ",REPO_TYPE, " to ", TARGET_PROJECT)
-                    curl --location --request PUT 'https://ukgartifactory.jfrog.io/access/api/v1/projects/_/attach/repositories/<repo-name>/<project-key>?force=false' --header 'Authorization: Bearer <token>'
+                    curl --location --request PUT 'https://server.jfrog.io/access/api/v1/projects/_/attach/repositories/<repo-name>/<project-key>?force=false' --header 'Authorization: Bearer <token>'
                     api_command = CURL_PUT + ARTIFACTORY_SERVER + ENDPOINT + REPO_NAME + SLASH + TARGET_PROJECT + SUFFIX + TOKEN + QUOTE
                     print("Executing api command: ",api_command)
                     command_exe = os.system(api_command)
