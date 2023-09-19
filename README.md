@@ -21,3 +21,5 @@ The steps below assume you are setting a new DR instance for the first time and 
 ### Run only on the main instance 
 4. ```./fed_create_yaml.sh https://instanceurl.jfrog.io https://dr-instanceurl.jfrog.io admin-user-id admin-id-Token```
 5. Now sync the members ```./fed_repo_member_sync.sh https://instanceurl.jfrog.io admin-user-id admin-id-token```
+
+python3 repoDiff.py --source-artifactory pro --target-artifactory proservices --source-repo fsg-th-docker-snapshots --target-repo fsg-th-docker-snapshots
