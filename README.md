@@ -23,3 +23,4 @@ The steps below assume you are setting a new DR instance for the first time and 
 5. Now sync the members ```./fed_repo_member_sync.sh https://instanceurl.jfrog.io admin-user-id admin-id-token```
 
 python3 repoDiff.py --source-artifactory pro --target-artifactory proservices --source-repo fsg-th-docker-snapshots --target-repo fsg-th-docker-snapshots
+./transfer-files.sh pro proservices <REPO_NAME> yes | parallel -P 8 -I {} sh -c '{}' >> output.log
